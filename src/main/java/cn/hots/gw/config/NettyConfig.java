@@ -1,8 +1,8 @@
 package cn.hots.gw.config;
 
-import cn.hots.gw.decoder.HeaderBasedFrameDecoder;
-import cn.hots.gw.decoder.MessageDecoder;
-import cn.hots.gw.decoder.MessageEncoder;
+import cn.hots.gw.protocol.decoder.frame.HeaderBasedFrameDecoder;
+import cn.hots.gw.protocol.decoder.frame.MessageDecoder;
+import cn.hots.gw.protocol.encoder.MessageEncoder;
 import cn.hots.gw.handler.MessageHandler;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
@@ -72,7 +72,7 @@ public class NettyConfig {
                             @Override
                             protected void initChannel(SocketChannel ch) {
                                 ch.pipeline()
-                                        .addLast(new HeaderBasedFrameDecoder(headerLength)) // 拆包
+                                        .addLast(new HeaderBasedFrameDecoder(port)) // 拆包
                                         .addLast(new MessageDecoder())                      // 字节转字符串
                                         .addLast(new MessageEncoder())                      // 新增编码器
                                         .addLast(new MessageHandler(port));

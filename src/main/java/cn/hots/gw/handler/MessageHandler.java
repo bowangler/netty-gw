@@ -1,8 +1,8 @@
 package cn.hots.gw.handler;
 
-import cn.hots.gw.domain.Port52001Message;
-import cn.hots.gw.domain.Port52002Message;
-import cn.hots.gw.domain.Port52003Message;
+import cn.hots.gw.protocol.model.Port52001Message;
+import cn.hots.gw.protocol.model.Port52002Message;
+import cn.hots.gw.protocol.model.Port52003Message;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;

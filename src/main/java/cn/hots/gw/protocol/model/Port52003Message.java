@@ -1,4 +1,4 @@
-package cn.hots.gw.domain;
+package cn.hots.gw.protocol.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

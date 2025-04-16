@@ -1,9 +1,7 @@
-package cn.hots.gw.domain;
+package cn.hots.gw.protocol.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
-
-import javax.annotation.sql.DataSourceDefinition;
 
 /**
  * @author TIT
