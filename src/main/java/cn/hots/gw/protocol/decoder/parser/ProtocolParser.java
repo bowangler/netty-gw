@@ -1,5 +1,6 @@
 package cn.hots.gw.protocol.decoder.parser;
 
+import cn.hots.gw.protocol.exception.ProtocolParseException;
 import io.netty.buffer.ByteBuf;
 
 /**
@@ -14,7 +15,7 @@ public interface ProtocolParser {
      * @param in 输入缓冲区
      * @return 解析后的消息对象（包含包头和包体）
      */
-    String parse(ByteBuf in);
+    String parse(ByteBuf in) throws ProtocolParseException;
 
     class ParsedMessage {
         private final String header;

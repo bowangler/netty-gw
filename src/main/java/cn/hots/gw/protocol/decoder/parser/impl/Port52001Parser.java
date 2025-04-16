@@ -1,6 +1,7 @@
 package cn.hots.gw.protocol.decoder.parser.impl;
 
 import cn.hots.gw.protocol.decoder.parser.ProtocolParser;
+import cn.hots.gw.protocol.exception.ProtocolParseException;
 import io.netty.buffer.ByteBuf;
 
 import java.nio.charset.StandardCharsets;
@@ -13,10 +14,17 @@ import java.nio.charset.StandardCharsets;
  */
 public class Port52001Parser implements ProtocolParser {
     @Override
-    public String parse(ByteBuf in) {
-        String header = in.readCharSequence(4, StandardCharsets.UTF_8).toString();
-        int bodyLength = Integer.parseInt(header.trim());
-        String body = in.readCharSequence(bodyLength, StandardCharsets.UTF_8).toString();
-        return header + body;
+    public String parse (ByteBuf in) throws ProtocolParseException {
+        try {
+            String header = in.readCharSequence(4, StandardCharsets.UTF_8).toString();
+            int bodyLength = Integer.parseInt(header.trim());
+            if (bodyLength <=0) {
+                throw ProtocolParseException.forInvalidHeader(header);
+            }
+            String body = in.readCharSequence(bodyLength, StandardCharsets.UTF_8).toString();
+            return header + body;
+        } catch (NumberFormatException e) {
+            throw new ProtocolParseException("Header must be numeric", e);
+        }
     }
 }
