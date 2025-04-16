@@ -7,8 +7,10 @@ import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
+import lombok.extern.slf4j.Slf4j;
 
 import java.nio.charset.StandardCharsets;
+
 
 /**
  * @author TIT
@@ -16,6 +18,7 @@ import java.nio.charset.StandardCharsets;
  * @description: TODO
  * @date 2025/4/15 18:22
  */
+@Slf4j
 @ChannelHandler.Sharable
 public class MessageHandler extends SimpleChannelInboundHandler<Object> {
     private final int port;
@@ -41,8 +44,13 @@ public class MessageHandler extends SimpleChannelInboundHandler<Object> {
 
     private void handlePort52001(ChannelHandlerContext ctx, Port52001Message msg) {
         // 处理52001端口的业务逻辑
-        String response = "PORT52001_ACK:" + msg.getBody().toUpperCase();
-        ctx.writeAndFlush(Unpooled.copiedBuffer(response, StandardCharsets.UTF_8));
+        // 示例msg内容：0004test
+
+        log.info("端口[{}]收到请求 | 包头:{} | 内容:{}", port, msg.getHeader(), msg.getBody());
+
+        // 构造响应（0007success）
+        String response = String.format("%04d%s", "success".length(), "success");
+        ctx.writeAndFlush(response);
     }
 
     private void handlePort52002(ChannelHandlerContext ctx, Port52002Message msg) {

@@ -14,6 +14,6 @@ import javax.annotation.sql.DataSourceDefinition;
 @Data
 @AllArgsConstructor
 public class Port52001Message {
-    private byte[] header;
+    private String header;
     private String body;
 }

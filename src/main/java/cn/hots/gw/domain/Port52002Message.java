@@ -12,6 +12,6 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 public class Port52002Message {
-    private byte[] header;
+    private String header;
     private String body;
 }

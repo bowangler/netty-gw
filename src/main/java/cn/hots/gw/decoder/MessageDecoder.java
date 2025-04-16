@@ -18,9 +18,9 @@ import java.util.List;
  * @description: TODO
  * @date 2025/4/15 18:20
  */
-public class MessageDecoder extends MessageToMessageDecoder<ByteBuf> {
+public class MessageDecoder extends MessageToMessageDecoder<String> {
     @Override
-    protected void decode(ChannelHandlerContext ctx, ByteBuf msg, List<Object> out) {
+    protected void decode(ChannelHandlerContext ctx, String msg, List<Object> out) {
         // 获取当前处理的端口号
         int port = ((InetSocketAddress) ctx.channel().localAddress()).getPort();
 
@@ -40,29 +40,29 @@ public class MessageDecoder extends MessageToMessageDecoder<ByteBuf> {
         }
     }
 
-    private Port52001Message parsePort52001(ByteBuf msg) {
-        // 解析52001端口协议（6字节头）
-        byte[] header = new byte[6];
-        msg.readBytes(header);
-        int bodyLen = ByteBuffer.wrap(header, 0, 4).getInt();
-        String body = msg.readCharSequence(bodyLen, StandardCharsets.UTF_8).toString();
+    private Port52001Message parsePort52001(String msg) {
+        // 读取完整ASCII包头（HeaderBasedFrameDecoder已确保可用）
+        String header = msg.substring(0, 4);
+
+        // 读取包体内容
+        String body = msg.substring(4);
         return new Port52001Message(header, body);
     }
 
-    private Port52002Message parsePort52002(ByteBuf msg) {
-        // 解析52001端口协议（6字节头）
-        byte[] header = new byte[6];
-        msg.readBytes(header);
-        int bodyLen = ByteBuffer.wrap(header, 0, 4).getInt();
-        String body = msg.readCharSequence(bodyLen, StandardCharsets.UTF_8).toString();
+    private Port52002Message parsePort52002(String msg) {
+        // 解析52002端口协议（6字节头）
+        String header = msg.substring(0, 6);
+
+        // 读取包体内容
+        String body = msg.substring(6);
         return new Port52002Message(header, body);
     }
-    private Port52003Message parsePort52003(ByteBuf msg) {
-        // 解析52001端口协议（6字节头）
-        byte[] header = new byte[6];
-        msg.readBytes(header);
-        int bodyLen = ByteBuffer.wrap(header, 0, 4).getInt();
-        String body = msg.readCharSequence(bodyLen, StandardCharsets.UTF_8).toString();
+    private Port52003Message parsePort52003(String msg) {
+        // 解析52002端口协议（8字节头）
+        String header = msg.substring(0, 8);
+
+        // 读取包体内容
+        String body = msg.substring(8);
         return new Port52003Message(header, body);
     }
     // 类似实现其他端口解析方法...

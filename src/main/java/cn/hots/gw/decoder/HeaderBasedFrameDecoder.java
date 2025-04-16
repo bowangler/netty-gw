@@ -4,8 +4,10 @@ import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageDecoder;
+import lombok.extern.slf4j.Slf4j;
 
 import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 /**
@@ -14,6 +16,7 @@ import java.util.List;
  * @description: TODO
  * @date 2025/4/15 18:20
  */
+@Slf4j
 public class HeaderBasedFrameDecoder extends ByteToMessageDecoder {
     private final int headerLength;
 
@@ -23,27 +26,33 @@ public class HeaderBasedFrameDecoder extends ByteToMessageDecoder {
 
     @Override
     protected void decode(ChannelHandlerContext ctx, ByteBuf in, List<Object> out) {
+        // 第一阶段：检查包头长度
         if (in.readableBytes() < headerLength) {
-            return; // 等待数据
-        }
-
-        // 读取包头（示例：包头包含包体长度信息）
-        byte[] headerBytes = new byte[headerLength];
-        in.readBytes(headerBytes);
-
-        // 假设包头前4字节为包体长度（具体协议需调整）
-        int bodyLength = ByteBuffer.wrap(headerBytes, 0, 4).getInt();
-
-        if (in.readableBytes() < bodyLength) {
-            in.resetReaderIndex();
             return;
         }
 
-        // 组合完整消息
-        ByteBuf fullMsg = Unpooled.buffer(headerLength + bodyLength);
-        fullMsg.writeBytes(headerBytes);
-        fullMsg.writeBytes(in.readBytes(bodyLength));
+        // 标记当前读指针位置
+        in.markReaderIndex();
+        try {
+            // 第二阶段：读取并解析包头
+            String header = in.readCharSequence(headerLength, StandardCharsets.UTF_8).toString();
+            int bodyLength = Integer.parseInt(header);
 
-        out.add(fullMsg);
+
+            // 第四阶段：验证数据完整性
+            if (in.readableBytes() < bodyLength) {
+                return;
+            }
+
+            // 第五阶段：提取完整数据帧
+            String body = in.readCharSequence(bodyLength, StandardCharsets.UTF_8).toString();
+            out.add(header + body);
+
+        } catch (NumberFormatException e) {
+            // 包头解析失败时关闭连接
+            in.resetReaderIndex();
+            log.error("Header parse error", e);
+            ctx.close();
+        }
     }
 }
